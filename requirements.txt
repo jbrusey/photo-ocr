@@ -1,2 +1,5 @@
 pytesseract
 opencv-python
+flake8
+pytest
+black
