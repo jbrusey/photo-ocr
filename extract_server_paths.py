@@ -4,7 +4,7 @@ import re
 import csv
 from pathlib import Path
 
-downloads = Path("~/Downloads").expanduser()
+downloads = Path("~/Downloads/images-to-delete").expanduser()
 output_csv = downloads / "server_paths.csv"
 
 with open(output_csv, "w", newline="") as csvfile:
