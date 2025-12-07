@@ -16,7 +16,11 @@ with open(csv_file) as f:
         dest = trash / Path(clean_p).name
 
         if dest.exists():
-            print(f"Already moved to trash: {dest}")
+            if src.exists():
+                print(f"Destination already exists, removing source: {dest}")
+                src.unlink()
+            else:
+                print(f"Already moved to trash: {dest}")
             continue
 
         if src.exists():
