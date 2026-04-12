@@ -1,0 +1,22 @@
+[project]
+name = "photo-ocr"
+version = "0.1.0"
+description = "Utility scripts for OCR-ing image metadata and moving files to trash"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+  "opencv-python",
+  "pandas",
+  "pytesseract",
+]
+
+[dependency-groups]
+dev = [
+  "black",
+  "flake8",
+  "pytest",
+]
+
+[tool.black]
+line-length = 88
+target-version = ["py313"]
