@@ -68,7 +68,7 @@ uv run python check_filenames.py \
 - `--photo-folder`: Base photo server path (e.g., `/Volumes/photo`)
 - `--base-folder`: Base folder for CSV files (default: `~/Downloads/images-to-delete`)
 - `--input-csv`: Input CSV file name (e.g., `server_paths.csv`)
-- `--output-csv`: Output CSV file name (default: `<input>_corrected.csv`)
+- `--output-csv`: Output CSV file name (default: `<input-stem>_corrected<ext>`, e.g. `server_paths_corrected.csv`)
 - `--cutoff`: Fuzzy matching cutoff (default: `0.75`)
 
 ### move_to_trash.py
@@ -76,25 +76,29 @@ uv run python check_filenames.py \
 Move files from the photo folder to trash based on a CSV list of paths.
 
 ```sh
-# Basic usage
+# Basic usage (trash directory is <photo-folder>/trash by default)
+uv run python move_to_trash.py \
+    --photo-folder /Volumes/photo \
+    --csv-file ~/Downloads/images-to-delete/server_paths_corrected.csv
+
+# Explicit trash directory
 uv run python move_to_trash.py \
     --photo-folder /Volumes/photo \
     --trash-folder /Volumes/photo/trash \
     --csv-file ~/Downloads/images-to-delete/server_paths_corrected.csv
 
-# Custom trash folder name
+# Custom trash folder name (derived from photo-folder)
 uv run python move_to_trash.py \
     --photo-folder /Volumes/photo \
-    --trash-folder /Volumes/photo/recycle \
     --trash-folder-name recycle \
     --csv-file ~/Downloads/server_paths_corrected.csv
 ```
 
 **Args:**
 - `--photo-folder`: Base photo server path (e.g., `/Volumes/photo`)
-- `--trash-folder`: Trash folder within photo folder (required)
+- `--trash-folder`: Trash directory to move files into (default: `<photo-folder>/<trash-folder-name>`)
 - `--csv-file`: CSV file with list of paths to move to trash (required)
-- `--trash-folder-name`: Name of the trash folder (default: `trash`)
+- `--trash-folder-name`: Name of the trash folder when `--trash-folder` is not specified (default: `trash`)
 
 ## Workflow
 
@@ -124,5 +128,9 @@ uv run python move_to_trash.py \
 ## Notes
 
 - Scripts are now **portable** - paths are provided via CLI arguments
-- All paths support Unix-style expansion (`~` for home directory)
+- All paths support `~` expansion (e.g. `~/Downloads`)
 - The `--cutoff` parameter controls fuzzy matching strictness (lower = more lenient)
+
+## Configuration reference
+
+`.config.example.json` documents the available configuration values for reference when constructing CLI commands. It is not loaded by any script directly.

@@ -6,6 +6,7 @@ Usage:
 """
 
 import argparse
+import re
 import cv2
 import pandas as pd
 import pytesseract
@@ -35,8 +36,26 @@ def main():
 
     args = parser.parse_args()
 
+    download_folder = args.download_folder.expanduser().resolve()
+    output_csv = args.output_csv.expanduser().resolve()
+
     server_paths = []
-    image_files = list(args.download_folder.glob(args.img_pattern))
+    seen_paths = set()
+    image_files = list(download_folder.glob(args.img_pattern))
+
+    # Metadata words to skip (matched as whole words)
+    metadata_words = [
+        "Taken", "Camera", "Original", "Compressed", "Location", "Offline",
+        "Download", "Downloaded", "Path", "size", "PM", "AM", "Unknown",
+        "Full", "West", "Midlands", "England", "United", "Kingdom",
+        "Photograph", "Apple", "NIKON", "OLYMPUS", "Canon", "PNG",
+    ]
+    metadata_pattern = re.compile(
+        r"\b(?:" + "|".join(re.escape(w) for w in metadata_words) + r")\b"
+    )
+
+    # Valid file extensions (lowercase for comparison)
+    valid_extensions = {".heic", ".jpeg", ".jpg"}
 
     for file in image_files:
         img = cv2.imread(str(file))
@@ -51,13 +70,6 @@ def main():
         # Extract paths: look for lines that look like server paths
         # Server paths have format like: /YYYY/YYYY-MM-DD-HASH.ext
         lines = text.splitlines()
-        seen_paths = set()
-
-        # Metadata words to skip
-        metadata_words = ["Taken", "Camera", "Original", "Compressed", "Location", "Offline", "Download", "Downloaded", "Path", "size", "x", "PM", "AM", "Unknown", "Full", "West", "Midlands", "England", "United", "Kingdom", "Photograph", "Apple", "NIKON", "OLYMPUS", "Canon", "PNG"]
-
-        # Valid file extensions
-        valid_extensions = {".heic", ".jpeg", ".jpg", ".JPG", ".HEIC", ".JPEG"}
 
         current_path = None  # Buffer for collecting a path
 
@@ -66,7 +78,7 @@ def main():
 
             # Skip empty lines - flush buffered path if valid
             if not line_stripped:
-                if current_path and any(ext in current_path for ext in valid_extensions):
+                if current_path and Path(current_path).suffix.casefold() in valid_extensions:
                     if current_path not in seen_paths:
                         print(current_path)
                         server_paths.append(current_path)
@@ -74,12 +86,12 @@ def main():
                     current_path = None
                 continue
 
-            # Reject metadata words
-            if any(word in line_stripped for word in metadata_words):
+            # Reject metadata words (whole-word match)
+            if metadata_pattern.search(line_stripped):
                 continue
 
             # Check if this line ends with a valid file extension
-            has_valid_ext = any(ext in line_stripped for ext in valid_extensions)
+            has_valid_ext = line_stripped.casefold().endswith(tuple(valid_extensions))
 
             # Check if this line looks like a server path (has date pattern or starts with /)
             has_date = any(date_pat in line_stripped for date_pat in ["/YYYY/", "-01-", "-02-", "-03-", "-04-", "-05-", "-06-", "-07-", "-08-", "-09-", "-10-", "-11-", "-12-", "/20", "/201"])
@@ -90,9 +102,11 @@ def main():
 
             if is_candidate:
                 if current_path:
-                    # We have a buffered path - combine if this line is clean
+                    # We have a buffered path - combine if this line has no internal spaces
                     if " " not in line_stripped:
-                        current_path = current_path.rstrip() + " " + line_stripped
+                        # Join fragments without a space: OCR may split a path across lines
+                        # and server paths should never contain spaces
+                        current_path = current_path.rstrip() + line_stripped
                     else:
                         # Flush current path and start new one
                         if current_path not in seen_paths:
@@ -105,13 +119,13 @@ def main():
 
         # Flush any remaining buffered path
         if current_path:
-            if any(ext in current_path for ext in valid_extensions):
+            if Path(current_path).suffix.casefold() in valid_extensions:
                 if current_path not in seen_paths:
                     print(current_path)
                     server_paths.append(current_path)
                     seen_paths.add(current_path)
 
-    pd.DataFrame(server_paths, columns=["server_path"]).to_csv(args.output_csv, index=False)
+    pd.DataFrame(server_paths, columns=["server_path"]).to_csv(output_csv, index=False)
 
 
 if __name__ == "__main__":

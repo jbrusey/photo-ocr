@@ -63,21 +63,22 @@ def main():
 
     args = parser.parse_args()
 
-    base_dir = args.base_folder
+    base_dir = args.base_folder.expanduser().resolve()
+    photo_folder = args.photo_folder.expanduser().resolve()
     csv_file = base_dir / args.input_csv
-    output_csv = csv_file.with_name(
-        args.output_csv or f"{args.input_csv}_corrected.csv"
-    )
+    input_path = Path(args.input_csv)
+    default_output = f"{input_path.stem}_corrected{input_path.suffix}"
+    output_csv = csv_file.with_name(args.output_csv or default_output)
 
     df = pd.read_csv(csv_file)
     df["corrected_server_path"] = df["server_path"].astype(str)
 
-    available_paths = build_available_paths(args.photo_folder)
+    available_paths = build_available_paths(photo_folder)
     corrected = []
 
     for server_path in df["server_path"].astype(str):
         clean_p = server_path.lstrip("/")
-        src = args.photo_folder / clean_p
+        src = photo_folder / clean_p
 
         if src.exists():
             corrected.append(server_path)
