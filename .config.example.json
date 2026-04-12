@@ -1,0 +1,8 @@
+{
+  "photo_folder": "/Volumes/photo",
+  "trash_folder": "/Volumes/photo/trash",
+  "trash_folder_name": "trash",
+  "base_folder": "~/Downloads/images-to-delete",
+  "img_pattern": "IMG_*",
+  "fuzzy_match_cutoff": 0.75
+}
