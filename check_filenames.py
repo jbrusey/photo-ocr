@@ -2,7 +2,9 @@
 """Check and correct file paths against available files in photo folder.
 
 Usage:
-    python check_filenames.py --photo-folder /Volumes/photo --base-folder ~/Downloads/images-to-delete --input-csv server_paths.csv
+    python check_filenames.py --photo-folder /Volumes/photo \
+        --base-folder ~/Downloads/images-to-delete \
+        --input-csv server_paths.csv
 """
 
 import argparse
