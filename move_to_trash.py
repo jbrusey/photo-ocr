@@ -2,7 +2,9 @@
 """Move files from photo folder to trash based on CSV list of paths to delete.
 
 Usage:
-    python move_to_trash.py --photo-folder /Volumes/photo --trash-folder /Volumes/photo/trash --csv-file ~/Downloads/images-to-delete/server_paths_corrected.csv
+    python move_to_trash.py --photo-folder /Volumes/photo \
+        --trash-folder /Volumes/photo/trash \
+        --csv-file ~/Downloads/images-to-delete/server_paths_corrected.csv
 """
 
 import argparse
@@ -46,7 +48,10 @@ def main():
         "--trash-folder-name",
         type=validate_folder_name,
         default="trash",
-        help="Name of the trash folder when --trash-folder is not specified (default: trash)",
+        help=(
+            "Name of the trash folder when --trash-folder is not specified "
+            "(default: trash)"
+        ),
     )
 
     args = parser.parse_args()

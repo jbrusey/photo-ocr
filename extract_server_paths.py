@@ -2,7 +2,8 @@
 """Extract server paths from images in Downloads folder.
 
 Usage:
-    python extract_server_paths.py --download-folder ~/Downloads/images-to-delete --output-csv server_paths.csv
+    python extract_server_paths.py --download-folder \
+        ~/Downloads/images-to-delete --output-csv server_paths.csv
 """
 
 import argparse
@@ -115,7 +116,8 @@ def main():
             # Check if this line ends with a valid file extension
             has_valid_ext = line_stripped.casefold().endswith(tuple(valid_extensions))
 
-            # Check if this line looks like a server path (has date pattern or starts with /)
+            # Check if this line looks like a server path
+            # (has date pattern or starts with /)
             has_date = any(
                 date_pat in line_stripped
                 for date_pat in [
@@ -138,14 +140,17 @@ def main():
             )
             starts_with_slash = line_stripped.startswith("/")
 
-            # Line is a candidate if it has valid extension, starts with /, or has date pattern
+            # Line is a candidate if it has valid extension,
+            # starts with /, or has date pattern
             is_candidate = has_valid_ext or starts_with_slash or has_date
 
             if is_candidate:
                 if current_path:
-                    # We have a buffered path - combine if this line has no internal spaces
+                    # We have a buffered path - combine if this
+                    # line has no internal spaces
                     if " " not in line_stripped:
-                        # Join fragments without a space: OCR may split a path across lines
+                        # Join fragments without a space:
+                        # OCR may split a path across lines
                         # and server paths should never contain spaces
                         current_path = current_path.rstrip() + line_stripped
                     else:
