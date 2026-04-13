@@ -125,6 +125,16 @@ uv run python move_to_trash.py \
        --csv-file ~/Downloads/images-to-delete/server_paths_corrected.csv
    ```
 
+
+## Development
+
+Run linting and formatting with Ruff:
+
+```sh
+uv run ruff check .
+uv run ruff format .
+```
+
 ## Notes
 
 - Scripts are now **portable** - paths are provided via CLI arguments
