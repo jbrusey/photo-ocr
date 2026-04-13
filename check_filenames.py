@@ -5,10 +5,11 @@ Usage:
     python check_filenames.py --photo-folder /Volumes/photo --base-folder ~/Downloads/images-to-delete --input-csv server_paths.csv
 """
 
-from difflib import get_close_matches
 import argparse
-import pandas as pd
+from difflib import get_close_matches
 from pathlib import Path
+
+import pandas as pd
 
 
 def build_available_paths(base_dir: Path) -> list[str]:
@@ -34,31 +35,31 @@ def main():
         "--photo-folder",
         type=Path,
         required=True,
-        help="Base photo server path (e.g., /Volumes/photo)"
+        help="Base photo server path (e.g., /Volumes/photo)",
     )
     parser.add_argument(
         "--base-folder",
         type=Path,
         required=True,
-        help="Base folder for CSV files (default: ~/Downloads/images-to-delete)"
+        help="Base folder for CSV files (default: ~/Downloads/images-to-delete)",
     )
     parser.add_argument(
         "--input-csv",
         type=str,
         required=True,
-        help="Input CSV file name (e.g., server_paths.csv)"
+        help="Input CSV file name (e.g., server_paths.csv)",
     )
     parser.add_argument(
         "--output-csv",
         type=str,
         default=None,
-        help="Output CSV file name (default: input-csv -> input-csv_corrected.csv)"
+        help="Output CSV file name (default: input-csv -> input-csv_corrected.csv)",
     )
     parser.add_argument(
         "--cutoff",
         type=float,
         default=0.75,
-        help="Fuzzy matching cutoff (default: 0.75)"
+        help="Fuzzy matching cutoff (default: 0.75)",
     )
 
     args = parser.parse_args()
