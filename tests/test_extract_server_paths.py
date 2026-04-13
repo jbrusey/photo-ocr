@@ -1,8 +1,11 @@
 import csv
 from pathlib import Path
 
+import pytesseract
 import pytest
+
 from extract_server_paths import extract_server_paths
+
 
 def test_extract_server_paths_matches_expected_test_data():
 
@@ -11,9 +14,7 @@ def test_extract_server_paths_matches_expected_test_data():
         expected_paths = [row["Path"] for row in csv.DictReader(csv_file)]
 
     try:
-        actual_paths = extract_server_paths(
-            test_data_dir, img_pattern="IMG_*.PNG"
-        )
+        actual_paths = extract_server_paths(test_data_dir, img_pattern="IMG_*.PNG")
     except pytesseract.pytesseract.TesseractNotFoundError as exc:  # pragma: no cover
         pytest.skip(f"Tesseract is not installed in this environment: {exc}")
 
