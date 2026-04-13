@@ -12,11 +12,17 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-  "black",
-  "flake8",
   "pytest",
+  "ruff",
 ]
 
-[tool.black]
+[tool.ruff]
 line-length = 88
-target-version = ["py313"]
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
