@@ -135,6 +135,14 @@ uv run ruff check .
 uv run ruff format .
 ```
 
+## Testing
+
+Run tests from the **repo root** (required so that relative paths like `test_data/` resolve correctly):
+
+```sh
+uv run pytest
+```
+
 ## Notes
 
 - Scripts are now **portable** - paths are provided via CLI arguments

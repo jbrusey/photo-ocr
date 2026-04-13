@@ -11,36 +11,17 @@ import re
 from pathlib import Path
 
 import cv2
-import pandas as pd
 import pytesseract
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Extract server paths from images")
-    parser.add_argument(
-        "--download-folder",
-        type=Path,
-        required=True,
-        help="Folder containing images to scan (default: ~/Downloads/images-to-delete)",
-    )
-    parser.add_argument(
-        "--output-csv", type=Path, required=True, help="Output CSV file path"
-    )
-    parser.add_argument(
-        "--img-pattern",
-        type=str,
-        default="IMG_*",
-        help="Glob pattern for image files (default: IMG_*)",
-    )
-
-    args = parser.parse_args()
-
-    download_folder = args.download_folder.expanduser().resolve()
-    output_csv = args.output_csv.expanduser().resolve()
-
+def extract_server_paths(download_folder: Path, img_pattern: str = "IMG_*") -> list[str]:
+    if not download_folder.is_dir():
+        raise FileNotFoundError(
+            f"download_folder does not exist or is not a directory: {download_folder}"
+        )
     server_paths = []
     seen_paths = set()
-    image_files = list(download_folder.glob(args.img_pattern))
+    image_files = sorted(download_folder.glob(img_pattern))
 
     # Metadata words to skip (matched as whole words)
     metadata_words = [
@@ -103,7 +84,6 @@ def main():
                     and Path(current_path).suffix.casefold() in valid_extensions
                 ):
                     if current_path not in seen_paths:
-                        print(current_path)
                         server_paths.append(current_path)
                         seen_paths.add(current_path)
                     current_path = None
@@ -156,7 +136,6 @@ def main():
                     else:
                         # Flush current path and start new one
                         if current_path not in seen_paths:
-                            print(current_path)
                             server_paths.append(current_path)
                             seen_paths.add(current_path)
                         current_path = line_stripped
@@ -167,9 +146,41 @@ def main():
         if current_path:
             if Path(current_path).suffix.casefold() in valid_extensions:
                 if current_path not in seen_paths:
-                    print(current_path)
                     server_paths.append(current_path)
                     seen_paths.add(current_path)
+
+    return server_paths
+
+
+def main():
+    import pandas as pd
+
+    parser = argparse.ArgumentParser(description="Extract server paths from images")
+    parser.add_argument(
+        "--download-folder",
+        type=Path,
+        required=True,
+        help="Folder containing images to scan (default: ~/Downloads/images-to-delete)",
+    )
+    parser.add_argument(
+        "--output-csv", type=Path, required=True, help="Output CSV file path"
+    )
+    parser.add_argument(
+        "--img-pattern",
+        type=str,
+        default="IMG_*",
+        help="Glob pattern for image files (default: IMG_*)",
+    )
+
+    args = parser.parse_args()
+
+    download_folder = args.download_folder.expanduser().resolve()
+    output_csv = args.output_csv.expanduser().resolve()
+
+    server_paths = extract_server_paths(download_folder, img_pattern=args.img_pattern)
+
+    for path in server_paths:
+        print(path)
 
     pd.DataFrame(server_paths, columns=["server_path"]).to_csv(output_csv, index=False)
 
