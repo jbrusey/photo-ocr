@@ -80,7 +80,6 @@ def extract_server_paths(download_folder: Path, img_pattern: str = "IMG_*") -> l
                     and Path(current_path).suffix.casefold() in valid_extensions
                 ):
                     if current_path not in seen_paths:
-                        print(current_path)
                         server_paths.append(current_path)
                         seen_paths.add(current_path)
                     current_path = None
@@ -133,7 +132,6 @@ def extract_server_paths(download_folder: Path, img_pattern: str = "IMG_*") -> l
                     else:
                         # Flush current path and start new one
                         if current_path not in seen_paths:
-                            print(current_path)
                             server_paths.append(current_path)
                             seen_paths.add(current_path)
                         current_path = line_stripped
@@ -144,7 +142,6 @@ def extract_server_paths(download_folder: Path, img_pattern: str = "IMG_*") -> l
         if current_path:
             if Path(current_path).suffix.casefold() in valid_extensions:
                 if current_path not in seen_paths:
-                    print(current_path)
                     server_paths.append(current_path)
                     seen_paths.add(current_path)
 
@@ -177,6 +174,9 @@ def main():
     output_csv = args.output_csv.expanduser().resolve()
 
     server_paths = extract_server_paths(download_folder, img_pattern=args.img_pattern)
+
+    for path in server_paths:
+        print(path)
 
     pd.DataFrame(server_paths, columns=["server_path"]).to_csv(output_csv, index=False)
 
