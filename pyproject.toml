@@ -5,7 +5,7 @@ description = "Utility scripts for OCR-ing image metadata and moving files to tr
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-  "opencv-python",
+  "pillow",
   "pandas",
   "pytesseract",
 ]
