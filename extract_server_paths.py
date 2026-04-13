@@ -14,11 +14,11 @@ import pytesseract
 from PIL import Image
 
 PATH_RE = re.compile(
-    r"/(?:19|20)\\d{2}/[^\\s]+?\\.(?:heic|jpe?g)",
+    r"/(?:19|20)\d{2}/[^\s]+?\.(?:heic|jpe?g)",
     re.IGNORECASE,
 )
 TRAILING_ALPHA_BEFORE_EXT_RE = re.compile(
-    r"(?<=\\d)[A-Za-z](?=\\.(?:heic|jpe?g)$)",
+    r"(?<=\d)[A-Za-z](?=\.(?:heic|jpe?g)$)",
     re.IGNORECASE,
 )
 
