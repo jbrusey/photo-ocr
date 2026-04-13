@@ -15,6 +15,10 @@ import pytesseract
 
 
 def extract_server_paths(download_folder: Path, img_pattern: str = "IMG_*") -> list[str]:
+    if not download_folder.is_dir():
+        raise FileNotFoundError(
+            f"download_folder does not exist or is not a directory: {download_folder}"
+        )
     server_paths = []
     seen_paths = set()
     image_files = sorted(download_folder.glob(img_pattern))
