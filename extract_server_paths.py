@@ -10,7 +10,9 @@ from extract_image_text import extract_text_from_images
 from text_to_server_path import extract_server_paths_from_rows, extract_paths_from_text
 
 
-def extract_server_paths(download_folder: Path, img_pattern: str = "IMG_*") -> list[str]:
+def extract_server_paths(
+    download_folder: Path, img_pattern: str = "IMG_*"
+) -> list[str]:
     rows = extract_text_from_images(download_folder, img_pattern=img_pattern)
     return extract_server_paths_from_rows(rows)
 
