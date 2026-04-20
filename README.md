@@ -14,141 +14,90 @@ uv sync --all-groups
 
 ## Usage
 
-All scripts now accept paths via CLI arguments. See `--help` for each script:
+All scripts accept paths via CLI arguments. See `--help` for each script.
 
-### extract_server_paths.py
+### extract_image_text.py
 
-Extract server paths from images in a Downloads folder.
+Extract OCR text from images and write an intermediate CSV.
 
 ```sh
-# Basic usage
-uv run python extract_server_paths.py \
+uv run python extract_image_text.py \
     --download-folder ~/Downloads/images-to-delete \
-    --output-csv ~/Downloads/images-to-delete/server_paths.csv
-
-# Custom image pattern
-uv run python extract_server_paths.py \
-    --download-folder /Volumes/photo/imports \
-    --output-csv /Volumes/photo/imports/parsed_paths.csv \
-    --img-pattern "PHOTO_*"
+    --output-csv ~/Downloads/images-to-delete/extracted_text.csv \
+    --img-pattern "IMG_*"
 ```
 
 **Args:**
 - `--download-folder`: Folder containing images to scan (required)
-- `--output-csv`: Output CSV file path (required)
+- `--output-csv`: Output CSV file path for OCR text (required)
 - `--img-pattern`: Glob pattern for image files (default: `IMG_*`)
+
+### text_to_server_path.py
+
+Parse OCR text CSV and extract canonical server paths.
+
+```sh
+uv run python text_to_server_path.py \
+    --input-csv ~/Downloads/images-to-delete/extracted_text.csv \
+    --output-csv ~/Downloads/images-to-delete/server_paths.csv
+```
+
+**Args:**
+- `--input-csv`: OCR text CSV from `extract_image_text.py` (required)
+- `--output-csv`: Output CSV file path for parsed server paths (required)
+
+### extract_server_paths.py (compatibility wrapper)
+
+Runs both steps above in one command for backwards compatibility.
+
+```sh
+uv run python extract_server_paths.py \
+    --download-folder ~/Downloads/images-to-delete \
+    --output-csv ~/Downloads/images-to-delete/server_paths.csv
+```
 
 ### check_filenames.py
 
 Check file paths against available files in the photo folder and suggest corrections for missing files.
 
 ```sh
-# Basic usage
 uv run python check_filenames.py \
     --photo-folder /Volumes/photo \
     --base-folder ~/Downloads/images-to-delete \
     --input-csv server_paths.csv
-
-# Custom output filename
-uv run python check_filenames.py \
-    --photo-folder /Volumes/photo \
-    --base-folder ~/Downloads \
-    --input-csv my_paths.csv \
-    --output-csv my_paths_corrected.csv
-
-# Adjust fuzzy match cutoff (0.0-1.0, higher = stricter)
-uv run python check_filenames.py \
-    --photo-folder /Volumes/photo \
-    --base-folder ~/Downloads/images-to-delete \
-    --input-csv server_paths.csv \
-    --cutoff 0.8
 ```
-
-**Args:**
-- `--photo-folder`: Base photo server path (e.g., `/Volumes/photo`)
-- `--base-folder`: Base folder for CSV files (default: `~/Downloads/images-to-delete`)
-- `--input-csv`: Input CSV file name (e.g., `server_paths.csv`)
-- `--output-csv`: Output CSV file name (default: `<input-stem>_corrected<ext>`, e.g. `server_paths_corrected.csv`)
-- `--cutoff`: Fuzzy matching cutoff (default: `0.75`)
 
 ### move_to_trash.py
 
 Move files from the photo folder to trash based on a CSV list of paths.
 
 ```sh
-# Basic usage (trash directory is <photo-folder>/trash by default)
 uv run python move_to_trash.py \
     --photo-folder /Volumes/photo \
     --csv-file ~/Downloads/images-to-delete/server_paths_corrected.csv
-
-# Explicit trash directory
-uv run python move_to_trash.py \
-    --photo-folder /Volumes/photo \
-    --trash-folder /Volumes/photo/trash \
-    --csv-file ~/Downloads/images-to-delete/server_paths_corrected.csv
-
-# Custom trash folder name (derived from photo-folder)
-uv run python move_to_trash.py \
-    --photo-folder /Volumes/photo \
-    --trash-folder-name recycle \
-    --csv-file ~/Downloads/server_paths_corrected.csv
 ```
-
-**Args:**
-- `--photo-folder`: Base photo server path (e.g., `/Volumes/photo`)
-- `--trash-folder`: Trash directory to move files into (default: `<photo-folder>/<trash-folder-name>`)
-- `--csv-file`: CSV file with list of paths to move to trash (required)
-- `--trash-folder-name`: Name of the trash folder when `--trash-folder` is not specified (default: `trash`)
 
 ## Workflow
 
-1. **Extract paths** from unprocessed images:
+1. **Extract OCR text** from images:
    ```sh
-   uv run python extract_server_paths.py \
+   uv run python extract_image_text.py \
        --download-folder ~/Downloads/images-to-delete \
+       --output-csv ~/Downloads/images-to-delete/extracted_text.csv
+   ```
+2. **Parse server paths** from OCR text:
+   ```sh
+   uv run python text_to_server_path.py \
+       --input-csv ~/Downloads/images-to-delete/extracted_text.csv \
        --output-csv ~/Downloads/images-to-delete/server_paths.csv
    ```
-
-2. **Check and correct** paths for missing files:
-   ```sh
-   uv run python check_filenames.py \
-       --photo-folder /Volumes/photo \
-       --base-folder ~/Downloads/images-to-delete \
-       --input-csv server_paths.csv
-   ```
-
-3. **Move to trash** once paths are verified:
-   ```sh
-   uv run python move_to_trash.py \
-       --photo-folder /Volumes/photo \
-       --trash-folder /Volumes/photo/trash \
-       --csv-file ~/Downloads/images-to-delete/server_paths_corrected.csv
-   ```
-
+3. **Check and correct** paths for missing files.
+4. **Move to trash** once paths are verified.
 
 ## Development
-
-Run linting and formatting with Ruff:
 
 ```sh
 uv run ruff check .
 uv run ruff format .
-```
-
-## Testing
-
-Run tests from the **repo root** (required so that relative paths like `test_data/` resolve correctly):
-
-```sh
 uv run pytest
 ```
-
-## Notes
-
-- Scripts are now **portable** - paths are provided via CLI arguments
-- All paths support `~` expansion (e.g. `~/Downloads`)
-- The `--cutoff` parameter controls fuzzy matching strictness (lower = more lenient)
-
-## Configuration reference
-
-`.config.example.json` documents the available configuration values for reference when constructing CLI commands. It is not loaded by any script directly.
