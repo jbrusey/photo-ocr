@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "photo-ocr"
 version = "0.1.0"
@@ -9,6 +13,19 @@ dependencies = [
   "pandas",
   "pytesseract",
 ]
+
+[project.scripts]
+photo-ocr-extract-text = "photo_ocr.cli:extract_text_main"
+photo-ocr-extract-paths = "photo_ocr.cli:extract_paths_main"
+photo-ocr-extract-server-paths = "photo_ocr.cli:extract_server_paths_main"
+photo-ocr-check-filenames = "photo_ocr.cli:check_filenames_main"
+photo-ocr-move-to-trash = "photo_ocr.cli:move_to_trash_main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [dependency-groups]
 dev = [
