@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Thin compatibility wrapper that runs OCR + path extraction in one command."""
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 
