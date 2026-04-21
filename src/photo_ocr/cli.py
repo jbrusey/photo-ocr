@@ -195,7 +195,10 @@ def move_to_trash_main() -> None:
         "--csv-file",
         type=Path,
         required=True,
-        help="CSV file with list of paths to move to trash",
+        help=(
+            "CSV file with paths to move to trash; must contain a "
+            "'corrected_server_path' column"
+        ),
     )
     parser.add_argument(
         "--trash-folder-name",
