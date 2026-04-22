@@ -8,7 +8,6 @@ from extract_server_paths import extract_paths_from_text, extract_server_paths
 
 
 def test_extract_server_paths_matches_expected_test_data():
-
     test_data_dir = Path("test_data")
     with (test_data_dir / "expected.csv").open(newline="") as csv_file:
         expected_paths = [row["Path"] for row in csv.DictReader(csv_file)]

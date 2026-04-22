@@ -178,7 +178,9 @@ def check_filenames_main() -> None:
 
 
 def move_to_trash_main() -> None:
-    parser = argparse.ArgumentParser(description="Move files to trash based on CSV list")
+    parser = argparse.ArgumentParser(
+        description="Move files to trash based on CSV list"
+    )
     parser.add_argument(
         "--photo-folder",
         type=Path,

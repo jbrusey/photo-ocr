@@ -8,7 +8,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 
 from photo_ocr.cli import extract_server_paths_main
 from photo_ocr.extract import extract_text_from_images
-from photo_ocr.match_paths import extract_paths_from_text, extract_server_paths_from_rows
+from photo_ocr.match_paths import (
+    extract_paths_from_text,
+    extract_server_paths_from_rows,
+)
 
 
 def extract_server_paths(

@@ -13,7 +13,6 @@ from photo_ocr.match_paths import (
     extract_server_paths_from_rows,
 )
 
-
 if __name__ == "__main__":
     extract_paths_main()
 
